@@ -17,16 +17,26 @@ const pool = new Pool({
 })
 
 app.get("/posts", async (req, res) => {
-    const result = await pool.query("SELECT * FROM posts ORDER BY id");
-    console.log(result.rows[0]);
-    res.json(result.rows);
+    try {
+        const result = await pool.query("SELECT * FROM posts ORDER BY id");
+        console.log(result.rows[0]);
+        res.json(result.rows);
+    } catch (error) {
+        console.log("Error de servidor");
+        res.status(500).json({message: "Error de servidor"});
+    }
 })
 
 app.post("/posts", async (req, res) => {
-    const { titulo, url, descripcion } = req.body;
-    const img = url;
-    const likes = 0;
-    const result = await pool.query("INSERT INTO posts (titulo, img, descripcion, likes) VALUES ($1, $2, $3, $4) RETURNING id", [titulo, img, descripcion, likes]);
-    const object = { id: result.rows[0].id, titulo: titulo, img: img, descripcion: descripcion, likes: likes };
-    res.json(object);
+    try{
+        const { titulo, url, descripcion } = req.body;
+        const img = url;
+        const likes = 0;
+        const result = await pool.query("INSERT INTO posts (titulo, img, descripcion, likes) VALUES ($1, $2, $3, $4) RETURNING id", [titulo, img, descripcion, likes]);
+        const object = { id: result.rows[0].id, titulo: titulo, img: img, descripcion: descripcion, likes: likes };
+        res.json(object);
+    } catch (error) {
+        console.log("Error de servidor");
+        res.status(500).json({message: "Error de servidor"});
+    }
 })
